@@ -1,0 +1,4 @@
+"use client";
+import { useEffect, useRef, useState } from "react";
+import { wedding } from "@/config/wedding";
+export function MusicPlayer() { const audio = useRef<HTMLAudioElement>(null); const [playing, setPlaying] = useState(false); useEffect(() => { if (localStorage.getItem("km-music") === "on") audio.current?.play().then(() => setPlaying(true)).catch(() => {}); }, []); const toggle = () => { const a = audio.current; if (!a) return; if (playing) { a.pause(); localStorage.setItem("km-music", "off"); setPlaying(false); } else a.play().then(() => { localStorage.setItem("km-music", "on"); setPlaying(true); }).catch(() => {}); }; return <><audio ref={audio} loop preload="none" src={wedding.assets.audio} /><button className={`music ${playing ? "is-playing" : ""}`} onClick={toggle} aria-label={playing ? "Pausar música" : "Reproducir música"}><span>{playing ? "Ⅱ" : "▶"}</span><i /><i /><i /></button></>; }
