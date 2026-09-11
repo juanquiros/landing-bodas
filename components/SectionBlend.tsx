@@ -1,1 +1,1 @@
-export function SectionBlend({ tone = "dark" }: { tone?: "dark" | "light" | "image" }) { return <div aria-hidden="true" className={`section-blend ${tone}`} />; }
+export function SectionBlend({ tone = "softFade" }: { tone?: "dark" | "light" | "image" | "softFade" | "warmGlow" | "imageDissolve" }) { return <div aria-hidden="true" className={`section-blend ${tone}`} />; }
