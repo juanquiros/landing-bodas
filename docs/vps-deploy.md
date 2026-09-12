@@ -1,6 +1,6 @@
 # Despliegue en VPS con Docker y Nginx
 
-Esta app se ejecuta en un contenedor y publica el puerto `3000` únicamente en `127.0.0.1`. Nginx es el único servicio expuesto a internet y gestiona HTTPS para `karina-y-mario.impulsodigitalmisiones.com.ar`.
+Esta app se ejecuta en un contenedor y publica el puerto interno `3107` únicamente en `127.0.0.1`. Nginx es el único servicio expuesto a internet y gestiona HTTPS para `karina-y-mario.impulsodigitalmisiones.com.ar`. Esto permite convivir con otros sitios y contenedores en el mismo VPS.
 
 ## 1. DNS y requisitos
 
@@ -13,7 +13,7 @@ Cloná o actualizá este repositorio en el VPS y, desde su raíz, ejecutá:
 ```bash
 docker compose up -d --build
 docker compose ps
-curl -I http://127.0.0.1:3000
+curl -I http://127.0.0.1:3107
 ```
 
 El último comando debe devolver una respuesta HTTP. La app no queda publicada directamente a internet.
@@ -26,7 +26,7 @@ Mientras todavía no exista el certificado, habilitá temporalmente este bloque 
 server {
     listen 80;
     server_name karina-y-mario.impulsodigitalmisiones.com.ar;
-    location / { proxy_pass http://127.0.0.1:3000; }
+    location / { proxy_pass http://127.0.0.1:3107; }
 }
 ```
 
