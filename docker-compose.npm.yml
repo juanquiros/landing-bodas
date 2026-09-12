@@ -1,0 +1,14 @@
+# Use this overlay when the VPS runs Nginx Proxy Manager in Docker.
+# Start with: NPM_NETWORK=<network-name> docker compose -f docker-compose.yml -f docker-compose.npm.yml up -d --build
+services:
+  landing:
+    networks:
+      default: {}
+      npm_proxy:
+        aliases:
+          - karina-y-mario-landing
+
+networks:
+  npm_proxy:
+    external: true
+    name: ${NPM_NETWORK:?Set_NPM_NETWORK_to_the_Nginx_Proxy_Manager_network_name}
