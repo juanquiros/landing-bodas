@@ -19,9 +19,9 @@ export const metadata: Metadata = {
     title,
     description,
     images: [{
-      url: "/og/karina-marcelo-share.png",
-      width: 1734,
-      height: 900,
+      url: "/og/karina-marcelo-share.jpg",
+      width: 1200,
+      height: 630,
       alt: "Karina y Marcelo — 21 de noviembre de 2026",
     }],
   },
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: ["/og/karina-marcelo-share.png"],
+    images: ["/og/karina-marcelo-share.jpg"],
   },
   icons: { icon: "/favicon.svg" },
 };
