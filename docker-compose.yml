@@ -1,0 +1,16 @@
+services:
+  landing:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: karina-y-mario-landing:latest
+    container_name: karina-y-mario-landing
+    restart: unless-stopped
+    # Nginx lives on the VPS host, so do not expose the application publicly.
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - landing-worker-state:/app/.wrangler/state
+
+volumes:
+  landing-worker-state:

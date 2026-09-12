@@ -1,0 +1,14 @@
+.git
+.next
+.vinext
+.wrangler
+.sites-runtime
+.tmp-*
+.agents
+.codex
+node_modules
+dist
+coverage
+.env*
+npm-debug.log*
+README.md
