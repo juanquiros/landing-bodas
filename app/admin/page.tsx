@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { wedding } from "@/config/wedding";
 import { getCurrentAdminSession } from "@/lib/admin-session";
 import { findRsvps, findSongRequests, getWeddingSummary } from "@/lib/wedding-data";
 import { LogoutButton } from "./LogoutButton";
@@ -28,7 +29,7 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
 
   return <main className="admin-page">
     <header className="admin-header">
-      <div><p className="admin-kicker">KARINA &amp; MARCELO</p><h1>Panel de administración</h1><p>21 · 11 · 2026</p></div>
+      <div><p className="admin-kicker">{wedding.couple.displayName.toUpperCase()}</p><h1>Panel de administración</h1><p>{wedding.date.display}</p></div>
       <div className="admin-header-actions"><a className="admin-report" href="/api/admin/report.pdf">DESCARGAR REPORTE PDF</a><LogoutButton /></div>
     </header>
 
@@ -47,6 +48,6 @@ export default async function AdminPage({ searchParams }: { searchParams: AdminS
       <div className="admin-table-wrap"><table><thead><tr><th>Invitado</th><th>Tema</th><th>Artista</th><th>Link</th><th>Fecha</th></tr></thead><tbody>{songs.length ? songs.map((item) => <tr key={item.id}><td><b>{item.guestName}</b></td><td>{item.title}</td><td>{item.artist}</td><td>{item.link ? <a href={item.link} target="_blank" rel="noreferrer">Abrir</a> : "-"}</td><td>{formatter.format(item.createdAt)}</td></tr>) : <tr><td colSpan={5}>Todavía no hay canciones solicitadas.</td></tr>}</tbody></table></div>
     </section>
 
-    <footer className="admin-footer">Impulso Digital Misiones</footer>
+    <footer className="admin-footer">{wedding.brand.name}</footer>
   </main>;
 }

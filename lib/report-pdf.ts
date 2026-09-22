@@ -1,4 +1,5 @@
 import { PDFDocument, PDFFont, rgb, StandardFonts } from "pdf-lib";
+import { wedding } from "@/config/wedding";
 import type { RsvpRow, SongRequestRow } from "@/db/schema";
 
 export type WeddingReportData = {
@@ -91,8 +92,8 @@ export async function generateWeddingReport(data: WeddingReportData) {
   };
 
   page.drawRectangle({ x: 0, y: PAGE_HEIGHT - 114, width: PAGE_WIDTH, height: 114, color: ESPRESSO });
-  page.drawText("KARINA & MARCELO", { x: MARGIN, y: PAGE_HEIGHT - 55, size: 27, font: bold, color: IVORY });
-  page.drawText("21 - 11 - 2026", { x: MARGIN, y: PAGE_HEIGHT - 80, size: 11, font: regular, color: CHAMPAGNE });
+  page.drawText(safeText(wedding.couple.displayName.toUpperCase()), { x: MARGIN, y: PAGE_HEIGHT - 55, size: 27, font: bold, color: IVORY });
+  page.drawText(wedding.date.report, { x: MARGIN, y: PAGE_HEIGHT - 80, size: 11, font: regular, color: CHAMPAGNE });
   page.drawText("REPORTE DE INVITACION", { x: PAGE_WIDTH - 236, y: PAGE_HEIGHT - 55, size: 13, font: bold, color: IVORY });
   page.drawText(`Generado: ${formatDate(data.generatedAt)}`, { x: PAGE_WIDTH - 236, y: PAGE_HEIGHT - 78, size: 8, font: regular, color: IVORY });
   y = PAGE_HEIGHT - 148;
@@ -168,7 +169,7 @@ export async function generateWeddingReport(data: WeddingReportData) {
 
   const pages = document.getPages();
   pages.forEach((currentPage, index) => {
-    currentPage.drawText(`Karina & Marcelo - Pagina ${index + 1} de ${pages.length}`, {
+    currentPage.drawText(`${safeText(wedding.couple.displayName)} - Pagina ${index + 1} de ${pages.length}`, {
       x: MARGIN,
       y: 18,
       size: 7,
@@ -177,7 +178,7 @@ export async function generateWeddingReport(data: WeddingReportData) {
     });
   });
 
-  document.setTitle("Karina & Marcelo - Reporte de invitacion");
-  document.setAuthor("Impulso Digital Misiones");
+  document.setTitle(`${safeText(wedding.couple.displayName)} - Reporte de invitacion`);
+  document.setAuthor(wedding.brand.name);
   return document.save();
 }

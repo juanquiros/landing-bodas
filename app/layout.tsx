@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import { wedding } from "@/config/wedding";
 import "./globals.css";
 
-const siteUrl = "https://marcelo-y-karina.impulsodigitalmisiones.com.ar";
-const title = "Karina & Marcelo | 21.11.2026";
-const description = "Nos casamos. Te esperamos para compartir una noche inolvidable.";
+const title = wedding.copy.metadataTitle;
+const description = wedding.copy.metadataDescription;
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(wedding.metadata.siteUrl),
   title,
   description,
   alternates: { canonical: "/" },
@@ -15,21 +15,21 @@ export const metadata: Metadata = {
     type: "website",
     locale: "es_AR",
     url: "/",
-    siteName: "Karina & Marcelo",
+    siteName: wedding.metadata.siteName,
     title,
     description,
     images: [{
-      url: "/og/karina-marcelo-share.jpg",
+      url: wedding.metadata.ogImage,
       width: 1200,
       height: 630,
-      alt: "Karina y Marcelo — 21 de noviembre de 2026",
+      alt: wedding.metadata.ogAlt,
     }],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
-    images: ["/og/karina-marcelo-share.jpg"],
+    images: [wedding.metadata.ogImage],
   },
   icons: { icon: "/favicon.svg" },
 };
