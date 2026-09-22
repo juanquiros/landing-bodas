@@ -1,18 +1,20 @@
 # Despliegue en VPS con Docker y Nginx
 
-Esta app se ejecuta en un contenedor y publica el puerto interno `3107` únicamente en `127.0.0.1`. Nginx es el único servicio expuesto a internet y gestiona HTTPS para `karina-y-mario.impulsodigitalmisiones.com.ar`. Esto permite convivir con otros sitios y contenedores en el mismo VPS.
+Esta app se ejecuta en un contenedor y publica el puerto interno `3000` en `127.0.0.1:3107`. Nginx es el único servicio expuesto a internet y gestiona HTTPS para `marcelo-y-karina.impulsodigitalmisiones.com.ar`. Esto permite convivir con otros sitios y contenedores en el mismo VPS.
 
 Si el VPS usa Nginx Proxy Manager dentro de Docker, seguí la sección **Nginx Proxy Manager** en lugar de los pasos de configuración Nginx del host.
 
 ## 1. DNS y requisitos
 
-Creá un registro `A` para `karina-y-mario.impulsodigitalmisiones.com.ar` apuntando a la IP pública del VPS. Abrí los puertos `80` y `443` en el firewall. En el servidor deben estar instalados Docker Compose, Nginx y Certbot con el plugin de Nginx.
+Creá un registro `A` para `marcelo-y-karina.impulsodigitalmisiones.com.ar` apuntando a la IP pública del VPS. Abrí los puertos `80` y `443` en el firewall. En el servidor deben estar instalados Docker y Docker Compose.
 
 ## 2. Levantar la app
 
-Cloná o actualizá este repositorio en el VPS y, desde su raíz, ejecutá:
+Cloná o actualizá este repositorio en el VPS, copiá `.env.example` a `.env`, configurá las credenciales y claves de Turnstile y ejecutá:
 
 ```bash
+cp .env.example .env
+nano .env
 docker compose up -d --build
 docker compose ps
 curl -I http://127.0.0.1:3107
@@ -27,28 +29,28 @@ Mientras todavía no exista el certificado, habilitá temporalmente este bloque 
 ```nginx
 server {
     listen 80;
-    server_name karina-y-mario.impulsodigitalmisiones.com.ar;
+    server_name marcelo-y-karina.impulsodigitalmisiones.com.ar;
     location / { proxy_pass http://127.0.0.1:3107; }
 }
 ```
 
-Guardalo en `/etc/nginx/sites-available/karina-y-mario.impulsodigitalmisiones.com.ar`, creá el enlace y validá Nginx:
+Guardalo en `/etc/nginx/sites-available/marcelo-y-karina.impulsodigitalmisiones.com.ar`, creá el enlace y validá Nginx:
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/karina-y-mario.impulsodigitalmisiones.com.ar /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/marcelo-y-karina.impulsodigitalmisiones.com.ar /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d karina-y-mario.impulsodigitalmisiones.com.ar
+sudo certbot --nginx -d marcelo-y-karina.impulsodigitalmisiones.com.ar
 ```
 
 ## 4. Activar la configuración final
 
-Copiá [la configuración incluida](../deploy/nginx/karina-y-mario.impulsodigitalmisiones.com.ar.conf) sobre ese archivo, validá y recargá Nginx:
+Copiá la configuración incluida en `deploy/nginx/` sobre ese archivo, validá y recargá Nginx:
 
 ```bash
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-Probá `https://karina-y-mario.impulsodigitalmisiones.com.ar` y verificá la renovación automática:
+Probá `https://marcelo-y-karina.impulsodigitalmisiones.com.ar` y verificá la renovación automática:
 
 ```bash
 sudo certbot renew --dry-run
@@ -85,7 +87,7 @@ En la interfaz de Nginx Proxy Manager, creá un **Proxy Host** con estos valores
 
 | Campo | Valor |
 | --- | --- |
-| Domain Names | `karina-y-mario.impulsodigitalmisiones.com.ar` |
+| Domain Names | `marcelo-y-karina.impulsodigitalmisiones.com.ar` |
 | Scheme | `http` |
 | Forward Hostname / IP | `karina-y-mario-landing` |
 | Forward Port | `3000` |
@@ -94,3 +96,5 @@ En la interfaz de Nginx Proxy Manager, creá un **Proxy Host** con estos valores
 | Cache Assets | desactivado |
 
 En la pestaña **SSL**, solicitá un certificado Let's Encrypt, activá **Force SSL** y aceptá los términos. Guardá el host. No hace falta abrir el puerto `3107` al exterior ni crear una configuración Nginx en el host.
+
+La base SQLite se conserva en el volumen `wedding_data`. No usar `docker compose down -v`. Consultá `docs/ADMIN_AND_FORMS.md` para migraciones, backup y restauración.

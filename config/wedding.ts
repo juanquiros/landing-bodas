@@ -1,4 +1,5 @@
 export const wedding = {
+  slug: "karina-marcelo-2026",
   couple: { bride: "Karina", groom: "Marcelo", initials: "K & M" }, date: "2026-11-21", time: "21:00",
   venue: { name: "LUGAR DEL EVENTO", address: "Muy pronto te contamos dónde nos encontramos.", mapUrl: "https://maps.google.com" },
   gift: { enabled: true, accountHolder: "Karina y Marcelo", bankName: "", alias: "", cbu: "", accountType: "", currency: "ARS", qrImage: null as string | null },

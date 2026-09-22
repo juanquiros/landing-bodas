@@ -1,3 +1,22 @@
-export type Rsvp = { fullName: string; attending: "yes" | "no"; guestCount: number; dietary: string; message: string; createdAt: string };
-const KEY = "km-rsvps";
-export const rsvps = { add(rsvp: Omit<Rsvp, "createdAt">) { const item = { ...rsvp, createdAt: new Date().toISOString() }; const saved: Rsvp[] = JSON.parse(localStorage.getItem(KEY) || "[]"); localStorage.setItem(KEY, JSON.stringify([item, ...saved])); return item; } };
+export type RsvpInput = {
+  fullName: string;
+  attending: "yes" | "no";
+  guestCount: number;
+  dietary: string;
+  message: string;
+  turnstileToken: string;
+  honeypot: string;
+};
+
+export const rsvps = {
+  async add(input: RsvpInput) {
+    const response = await fetch("/api/rsvp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    const result = await response.json() as { ok: boolean; message?: string };
+    if (!response.ok) throw new Error(result.message || "No pudimos registrar tu respuesta. Intentá nuevamente.");
+    return result;
+  },
+};
