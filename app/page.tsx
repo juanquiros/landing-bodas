@@ -124,7 +124,7 @@ export default function Home() {
       <WeddingNav />
 
       <section id="inicio" className="hero" style={{ backgroundImage: `url(${wedding.assets.heroFallback})`, backgroundPosition: photoFive.position }}>
-        <video autoPlay muted loop playsInline poster={wedding.assets.heroFallback} src={wedding.assets.heroVideo} />
+        {wedding.assets.heroVideo && <video autoPlay muted loop playsInline poster={wedding.assets.heroFallback} src={wedding.assets.heroVideo} />}
         <div className="hero-copy">
           <p className="eyebrow">{wedding.date.hero}</p>
           <h1>{wedding.couple.bride.toUpperCase()} <em>&amp;</em> {wedding.couple.groom.toUpperCase()}</h1>

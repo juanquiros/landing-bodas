@@ -64,7 +64,7 @@ export const wedding = {
     ogAlt: "Karina y Marcelo — 21 de noviembre de 2026",
   },
   assets: {
-    heroVideo: "/video/hero-wedding.mp4",
+    heroVideo: null as string | null,
     heroFallback: "/images/karina-marcelo/photo-05.webp",
     audio: "/audio/karina-marcelo/wedding-theme.mp3",
     photos: [
