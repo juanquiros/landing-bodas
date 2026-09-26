@@ -188,7 +188,13 @@ export default function Home() {
 
       <section className="forever" style={{ backgroundImage: `url(${photoTwo.src})`, backgroundPosition: photoTwo.position }}><div><p data-reveal>Hay días especiales.</p><p data-reveal>Hay personas especiales.</p><p data-reveal>Y hay momentos</p><p data-reveal>que queremos guardar</p><h2 data-reveal>PARA<br />SIEMPRE.</h2></div></section>
       <footer className="cinematic-footer" style={{ backgroundImage: `linear-gradient(0deg,rgba(17,16,15,.82),rgba(17,16,15,.45)),url(${photoFive.src})`, backgroundPosition: photoFive.position }}><p data-reveal className="monogram">{wedding.couple.initials}</p><p data-reveal>{wedding.date.display}</p><p data-reveal>{wedding.copy.closing}</p><h2 data-reveal>{wedding.couple.bride.toUpperCase()}<br /><em>&amp;</em><br />{wedding.couple.groom.toUpperCase()}</h2></footer>
-      <div className="brand-credit"><a href={wedding.brand.url} target="_blank" rel="noopener noreferrer">Desarrollado por {wedding.brand.name}</a><span> · {wedding.date.year}</span></div>
+      <div className="brand-credit">
+        <span>Desarrollado por {wedding.brand.name} · {wedding.date.year}</span>
+        <a className="brand-contact" href={wedding.brand.whatsappUrl} target="_blank" rel="noopener noreferrer">
+          <svg className="whatsapp-icon" aria-hidden="true" viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2A9.96 9.96 0 0 0 3.42 17l-1.29 4.72 4.83-1.27A10 10 0 1 0 12.04 2Zm0 18.18a8.16 8.16 0 0 1-4.17-1.14l-.3-.18-2.87.75.77-2.8-.19-.29a8.17 8.17 0 1 1 6.76 3.66Zm4.48-6.1c-.25-.12-1.47-.72-1.7-.8-.23-.09-.4-.13-.56.12-.16.25-.64.81-.78.98-.15.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.25-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.1-.5.12-.12.25-.29.38-.43.12-.15.16-.25.25-.42.08-.17.04-.31-.02-.44-.07-.13-.56-1.35-.77-1.85-.2-.5-.42-.44-.56-.44h-.48c-.16 0-.42.06-.64.31-.22.25-.84.82-.84 2s.86 2.31.98 2.47c.12.17 1.69 2.58 4.1 3.62.57.25 1.02.39 1.37.5.58.18 1.1.15 1.52.09.46-.07 1.47-.6 1.68-1.18.2-.58.2-1.08.14-1.18-.07-.1-.23-.16-.48-.29Z" /></svg>
+          <span>{wedding.brand.whatsappLabel}</span>
+        </a>
+      </div>
       <MusicPlayer />
     </main>
   );

@@ -68,7 +68,7 @@ export const wedding = {
     heroFallback: "/images/karina-marcelo/photo-05.webp",
     audio: "/audio/karina-marcelo/wedding-theme.mp3",
     photos: [
-      { src: "/images/karina-marcelo/photo-01.webp", alt: "Karina y Marcelo juntos en una noche de paseo por el río", position: "50% 63%" },
+      { src: "/images/karina-marcelo/photo-01.webp", alt: "Karina y Marcelo en distintos momentos compartidos", position: "50% 50%" },
       { src: "/images/karina-marcelo/photo-02.webp", alt: "Karina y Marcelo contemplando la ciudad junto al mar", position: "50% 58%" },
       { src: "/images/karina-marcelo/photo-03.webp", alt: "Karina y Marcelo frente al barco durante su viaje", position: "50% 54%" },
       { src: "/images/karina-marcelo/photo-04.webp", alt: "Karina y Marcelo caminando juntos por la playa", position: "50% 48%" },
@@ -77,6 +77,7 @@ export const wedding = {
   },
   brand: {
     name: "Impulso Digital Misiones",
-    url: "https://impulsodigitalmisiones.com.ar/",
+    whatsappUrl: "https://api.whatsapp.com/send/?phone=5491137942442&text=Hola!%20me%20gust%C3%B3%20la%20invitaci%C3%B3n%20digital%20de%20Marcelo%20y%20Karina%20y%20quer%C3%ADa%20consultar%20al%20respecto.&type=phone_number&app_absent=0",
+    whatsappLabel: "Consultas por WhatsApp",
   },
 } as const;
