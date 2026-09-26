@@ -18,6 +18,16 @@ import { songRequests, PublicSong } from "@/services/songRequests";
 
 const [photoOne, photoTwo, photoThree, photoFour, photoFive] = wedding.assets.photos;
 const [dressTitle, dressAccent] = wedding.dressCode.title.split(" ");
+type FormNote = { tone: "success" | "error"; message: string } | null;
+
+function validPublicUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
 
 function useCountdown() {
   const [left, setLeft] = useState({ d: 0, h: 0, m: 0, s: 0 });
@@ -68,8 +78,8 @@ export default function Home() {
   useRevealMotion();
   const time = useCountdown();
   const [songs, setSongs] = useState<PublicSong[]>([]);
-  const [songNote, setSongNote] = useState("");
-  const [rsvpNote, setRsvpNote] = useState("");
+  const [songNote, setSongNote] = useState<FormNote>(null);
+  const [rsvpNote, setRsvpNote] = useState<FormNote>(null);
   const [songSubmitting, setSongSubmitting] = useState(false);
   const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
   const [songToken, setSongToken] = useState("");
@@ -84,16 +94,25 @@ export default function Home() {
     if (songSubmitting) return;
     const element = event.currentTarget;
     const form = new FormData(element);
+    const guestName = String(form.get("guestName")).trim();
+    const artist = String(form.get("artist")).trim();
+    const title = String(form.get("title")).trim();
+    const link = String(form.get("link")).trim();
+    if (guestName.length < 2) return setSongNote({ tone: "error", message: "Ingresá tu nombre para saber quién pidió el tema." });
+    if (!artist) return setSongNote({ tone: "error", message: "Indicá el artista o banda." });
+    if (!title) return setSongNote({ tone: "error", message: "Indicá el nombre de la canción." });
+    if (link && !validPublicUrl(link)) return setSongNote({ tone: "error", message: "El link debe ser una URL válida de Spotify o YouTube." });
+    if (!songToken) return setSongNote({ tone: "error", message: "Completá la verificación de seguridad antes de enviar." });
     setSongSubmitting(true);
-    setSongNote("");
+    setSongNote(null);
     try {
-      await songRequests.add({ guestName: String(form.get("guestName")), artist: String(form.get("artist")), title: String(form.get("title")), link: String(form.get("link")) || undefined, turnstileToken: songToken, honeypot: String(form.get("website") || "") });
+      await songRequests.add({ guestName, artist, title, link: link || undefined, turnstileToken: songToken, honeypot: String(form.get("website") || "") });
       setSongs(await songRequests.all());
-      setSongNote("✓ Listo. Ya tiene trabajo el DJ.");
+      setSongNote({ tone: "success", message: "✓ Listo. Ya tiene trabajo el DJ." });
       element.reset();
       setSongCaptchaReset((value) => value + 1);
     } catch (error) {
-      setSongNote(error instanceof Error ? error.message : "No pudimos registrar tu canción. Intentá nuevamente.");
+      setSongNote({ tone: "error", message: error instanceof Error ? error.message : "No pudimos registrar tu canción. Intentá nuevamente." });
     } finally {
       setSongSubmitting(false);
     }
@@ -104,15 +123,22 @@ export default function Home() {
     if (rsvpSubmitting) return;
     const element = event.currentTarget;
     const form = new FormData(element);
+    const fullName = String(form.get("name")).trim();
+    const attending = String(form.get("attending"));
+    const guestCount = Number(form.get("guests"));
+    if (fullName.length < 2) return setRsvpNote({ tone: "error", message: "Ingresá tu nombre y apellido." });
+    if (attending !== "yes" && attending !== "no") return setRsvpNote({ tone: "error", message: "Contanos si vas a poder acompañarnos." });
+    if (!Number.isInteger(guestCount) || guestCount < 1 || guestCount > 20) return setRsvpNote({ tone: "error", message: "Indicá entre 1 y 20 personas." });
+    if (!rsvpToken) return setRsvpNote({ tone: "error", message: "Completá la verificación de seguridad antes de confirmar." });
     setRsvpSubmitting(true);
-    setRsvpNote("");
+    setRsvpNote(null);
     try {
-      await rsvps.add({ fullName: String(form.get("name")), attending: String(form.get("attending")) as "yes" | "no", guestCount: Number(form.get("guests")), dietary: String(form.get("dietary")), message: String(form.get("message")), turnstileToken: rsvpToken, honeypot: String(form.get("website") || "") });
-      setRsvpNote("Gracias por responder. ¡Nos hace muy felices!");
+      await rsvps.add({ fullName, attending, guestCount, dietary: String(form.get("dietary")), message: String(form.get("message")), turnstileToken: rsvpToken, honeypot: String(form.get("website") || "") });
+      setRsvpNote({ tone: "success", message: "¡Gracias por confirmar! Nos hace muy felices que seas parte de este día." });
       element.reset();
       setRsvpCaptchaReset((value) => value + 1);
     } catch (error) {
-      setRsvpNote(error instanceof Error ? error.message : "No pudimos registrar tu respuesta. Intentá nuevamente.");
+      setRsvpNote({ tone: "error", message: error instanceof Error ? error.message : "No pudimos registrar tu respuesta. Intentá nuevamente." });
     } finally {
       setRsvpSubmitting(false);
     }
@@ -175,8 +201,8 @@ export default function Home() {
       <section id="musica" className="songs">
         <AmbientGlow className="glow-songs" /><div data-reveal className="vinyl" aria-hidden="true" />
         <p data-reveal className="eyebrow">TU TEMA PARA LA FIESTA</p><h2 data-reveal>QUE SUENE<br /><em>TU TEMA</em></h2><p data-reveal>Una buena fiesta también la hacen los invitados.<br />Dejanos esa canción que no puede faltar.</p><div data-reveal className="wave">∿ ∿ ∿ ∿ ∿ ∿ ∿ ∿</div>
-        <form data-reveal onSubmit={sendSong}><input required name="guestName" placeholder="Nombre" /><input required name="artist" placeholder="Artista" /><input required name="title" placeholder="Canción" /><input name="link" type="url" placeholder="Link Spotify / YouTube (opcional)" /><label className="honeypot" aria-hidden="true">Sitio web<input name="website" tabIndex={-1} autoComplete="off" /></label><TurnstileWidget onToken={setSongToken} resetKey={songCaptchaReset} /><button disabled={songSubmitting}>{songSubmitting ? "SUMANDO..." : "SUMAR A LA PLAYLIST →"}</button></form>
-        {songNote && <p className="form-note">{songNote}</p>}
+        <form data-reveal noValidate onSubmit={sendSong}><input name="guestName" placeholder="Nombre" aria-invalid={songNote?.tone === "error" || undefined} /><input name="artist" placeholder="Artista" aria-invalid={songNote?.tone === "error" || undefined} /><input name="title" placeholder="Canción" aria-invalid={songNote?.tone === "error" || undefined} /><input name="link" type="url" placeholder="Link Spotify / YouTube (opcional)" aria-invalid={songNote?.tone === "error" || undefined} /><label className="honeypot" aria-hidden="true">Sitio web<input name="website" tabIndex={-1} autoComplete="off" /></label><TurnstileWidget onToken={setSongToken} resetKey={songCaptchaReset} /><button disabled={songSubmitting}>{songSubmitting ? "SUMANDO..." : "SUMAR A LA PLAYLIST →"}</button></form>
+        {songNote && <p className={`form-note form-note--${songNote.tone}`} role={songNote.tone === "error" ? "alert" : "status"} aria-live="polite">{songNote.message}</p>}
         {songs.length > 0 && <div className="requested"><p className="eyebrow">ALGUNOS TEMAS QUE YA PIDIERON</p>{songs.slice(0, 5).map((song, index) => <p key={`${song.title}-${song.artist}-${index}`}><b>{song.title}</b> — {song.artist}</p>)}</div>}
       </section>
 
@@ -184,7 +210,7 @@ export default function Home() {
 
       <section id="galeria" className="gallery"><p data-reveal className="eyebrow">GALERÍA</p><h2 data-reveal>NUESTROS<br />MOMENTOS</h2><div className="masonry">{wedding.assets.photos.map((photo) => <img data-reveal key={photo.src} src={photo.src} alt={photo.alt} style={{ objectPosition: photo.position }} />)}</div></section>
 
-      <section id="rsvp" className="rsvp"><p data-reveal className="eyebrow">RSVP</p><h2 data-reveal>¿NOS<br /><em>ACOMPAÑÁS?</em></h2><form data-reveal onSubmit={sendRsvp}><input required name="name" placeholder="Nombre y apellido" /><fieldset><legend>¿Vas a asistir?</legend><label><input required type="radio" name="attending" value="yes" /> Sí, obvio</label><label><input required type="radio" name="attending" value="no" /> No voy a poder</label></fieldset><input required min="1" max="20" name="guests" type="number" placeholder="Cantidad de personas" /><input name="dietary" maxLength={500} placeholder="Restricciones alimentarias" /><textarea name="message" maxLength={1000} placeholder="Mensaje para los novios" /><label className="honeypot" aria-hidden="true">Sitio web<input name="website" tabIndex={-1} autoComplete="off" /></label><TurnstileWidget onToken={setRsvpToken} resetKey={rsvpCaptchaReset} /><button disabled={rsvpSubmitting}>{rsvpSubmitting ? "CONFIRMANDO..." : "CONFIRMAR ASISTENCIA →"}</button></form>{rsvpNote && <p className="form-note">{rsvpNote}</p>}</section>
+      <section id="rsvp" className="rsvp"><p data-reveal className="eyebrow">RSVP</p><h2 data-reveal>¿NOS<br /><em>ACOMPAÑÁS?</em></h2><form data-reveal noValidate onSubmit={sendRsvp}><input name="name" placeholder="Nombre y apellido" aria-invalid={rsvpNote?.tone === "error" || undefined} /><fieldset aria-invalid={rsvpNote?.tone === "error" || undefined}><legend>¿Vas a asistir?</legend><label><input type="radio" name="attending" value="yes" /> Sí, obvio</label><label><input type="radio" name="attending" value="no" /> No voy a poder</label></fieldset><input min="1" max="20" name="guests" type="number" placeholder="Cantidad de personas" aria-invalid={rsvpNote?.tone === "error" || undefined} /><input name="dietary" maxLength={500} placeholder="Restricciones alimentarias" /><textarea name="message" maxLength={1000} placeholder="Mensaje para los novios" /><label className="honeypot" aria-hidden="true">Sitio web<input name="website" tabIndex={-1} autoComplete="off" /></label><TurnstileWidget onToken={setRsvpToken} resetKey={rsvpCaptchaReset} /><button disabled={rsvpSubmitting}>{rsvpSubmitting ? "CONFIRMANDO..." : "CONFIRMAR ASISTENCIA →"}</button></form>{rsvpNote && <p className={`form-note form-note--${rsvpNote.tone}`} role={rsvpNote.tone === "error" ? "alert" : "status"} aria-live="polite">{rsvpNote.message}</p>}</section>
 
       <section className="forever" style={{ backgroundImage: `url(${photoTwo.src})`, backgroundPosition: photoTwo.position }}><div><p data-reveal>Hay días especiales.</p><p data-reveal>Hay personas especiales.</p><p data-reveal>Y hay momentos</p><p data-reveal>que queremos guardar</p><h2 data-reveal>PARA<br />SIEMPRE.</h2></div></section>
       <footer className="cinematic-footer" style={{ backgroundImage: `linear-gradient(0deg,rgba(17,16,15,.82),rgba(17,16,15,.45)),url(${photoFive.src})`, backgroundPosition: photoFive.position }}><p data-reveal className="monogram">{wedding.couple.initials}</p><p data-reveal>{wedding.date.display}</p><p data-reveal>{wedding.copy.closing}</p><h2 data-reveal>{wedding.couple.bride.toUpperCase()}<br /><em>&amp;</em><br />{wedding.couple.groom.toUpperCase()}</h2></footer>
